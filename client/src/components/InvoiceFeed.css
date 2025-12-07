@@ -1,0 +1,160 @@
+.invoice-feed {
+  width: 100%;
+}
+
+.invoice-feed.empty {
+  padding: 3rem 0;
+}
+
+.empty-state {
+  text-align: center;
+  color: #999;
+}
+
+.empty-state p {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-hint {
+  font-size: 1rem;
+  color: #bbb;
+}
+
+.feed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.summary {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.summary-item {
+  color: #555;
+  font-size: 1rem;
+}
+
+.summary-item strong {
+  color: #333;
+}
+
+.refresh-btn {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.refresh-btn:hover {
+  background: #e0e0e0;
+}
+
+.invoice-table-wrapper {
+  overflow-x: auto;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.invoice-table thead {
+  background: #f8f9fa;
+}
+
+.invoice-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.invoice-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+}
+
+.invoice-table tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.vendor-name {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.amount {
+  font-weight: 600;
+  color: #2d3748;
+  text-align: right;
+}
+
+.invoice-id {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-paid {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+@media (max-width: 768px) {
+  .invoice-table {
+    font-size: 0.85rem;
+  }
+
+  .invoice-table th,
+  .invoice-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .feed-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .summary {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .invoice-id {
+    font-size: 0.75rem;
+  }
+}
