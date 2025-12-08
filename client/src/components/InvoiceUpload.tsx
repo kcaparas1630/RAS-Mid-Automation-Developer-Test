@@ -57,9 +57,7 @@ const InvoiceUpload: React.FC<InvoiceUploadProps> = ({ onInvoiceUploaded }) => {
             fileType: selectedFile.type,
           };
 
-          console.log('Original file size:', (selectedFile.size / 1024 / 1024).toFixed(2), 'MB');
           fileToUpload = await imageCompression(selectedFile, options);
-          console.log('Compressed file size:', (fileToUpload.size / 1024 / 1024).toFixed(2), 'MB');
         } catch (compressionError) {
           console.error('Compression error:', compressionError);
           setMessage({ type: 'error', text: 'Failed to compress image. Please try a smaller file.' });
@@ -82,7 +80,6 @@ const InvoiceUpload: React.FC<InvoiceUploadProps> = ({ onInvoiceUploaded }) => {
       }
 
       const result = await response.json();
-      console.log('n8n response:', result);
 
       // Check if the response indicates an error (e.g., duplicate)
       if (result.error || result.success === false) {

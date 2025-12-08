@@ -7,7 +7,23 @@
         "path": "receipt-ocr",
         "responseMode": "responseNode",
         "options": {
-          "rawBody": true
+          "rawBody": true,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://ras-mid-automation-developer-test.vercel.app"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type"
+              }
+            ]
+          }
         }
       },
       "id": "eaeb0dea-c637-45af-bbdd-fedd13ac1c40",
@@ -15,8 +31,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -512,
-        2096
+        -1888,
+        2800
       ],
       "webhookId": "35218078-6e9d-473f-afb0-d47a8a8fd310"
     },
@@ -56,38 +72,14 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -288,
-        2096
-      ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "http://localhost:3000/api/invoices",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ $json.output }}",
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "json"
-            }
-          }
-        }
-      },
-      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "name": "Send to Node.js Backend",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        128,
-        2096
+        -1664,
+        2800
       ]
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ $json }}",
+        "responseBody": "{\"success\": true, \"message\": \"Invoice created successfully\"}",
         "options": {}
       },
       "id": "7af69d6a-e48f-46a2-8792-dd31b4b79092",
@@ -95,17 +87,17 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        288,
-        2096
+        -640,
+        2704
       ]
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ $json.ParsedResults[0].ParsedText }}",
+        "text": "={{ $json.ParsedResults[0].ParsedText || \"No text extracted\" }}",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are a receipt data extraction assistant. Extract the following fields from the receipt text:\n\n- Vendor Name: The name of the store or business\n- Total Amount: The total amount paid (numeric value only)\n- Date: The date of the transaction\n\nReturn the data in the exact JSON format specified by the output parser."
+          "systemMessage": "You are a receipt data extraction assistant. Extract the following fields from the receipt text:\n\n- Vendor Name: The name of the store or business\n- Total Amount: The total amount paid (numeric value only)\n- Date: The date of the transaction (if no date is found in the receipt, use today's date in YYYY-MM-DD format)\n\nReturn the data in the exact JSON format specified by the output parser."
         }
       },
       "id": "419f8f7d-cb42-4bcd-ad2b-7cc3da736105",
@@ -113,45 +105,132 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3,
       "position": [
-        -64,
-        1984
+        -1440,
+        2800
       ]
     },
     {
       "parameters": {
         "schemaType": "manual",
-        "inputSchema": "{\"type\":\"object\",\"properties\":{\"vendorName\":{\"type\":\"string\",\"description\":\"Name of the vendor or store\"},\"totalAmount\":{\"type\":\"number\",\"description\":\"Total amount from the receipt\"},\"date\":{\"type\":\"string\",\"description\":\"Date of the transaction\"}},\"required\":[\"vendorName\",\"totalAmount\",\"date\"]}"
+        "inputSchema": "{\"type\":\"object\",\"properties\":{\"vendorName\":{\"type\":\"string\",\"description\":\"Name of the vendor or store\"},\"totalAmount\":{\"type\":\"number\",\"description\":\"Total amount from the receipt\"},\"date\":{\"type\":\"string\",\"description\":\"Date of the transaction in YYYY-MM-DD format. If no date is found, use today's date\"}},\"required\":[\"vendorName\",\"totalAmount\",\"date\"]}"
       },
       "id": "8278458e-3d42-43ed-a8ea-c75a55c0d2c1",
       "name": "Receipt JSON Schema",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        80,
-        2208
+        -1296,
+        3024
       ]
     },
     {
       "parameters": {
-        "model": {
-          "__rl": true,
-          "mode": "list",
-          "value": "gpt-4.1-mini"
+        "method": "POST",
+        "url": "https://ras-mid-automation-developer-test.onrender.com/api/invoices",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "vendorName",
+              "value": "={{ $json.output.vendorName }}"
+            },
+            {
+              "name": "totalAmount",
+              "value": "={{ $json.output.totalAmount }}"
+            },
+            {
+              "name": "date",
+              "value": "={{ $json.output.date }}"
+            }
+          ]
         },
         "options": {}
       },
-      "id": "31de9cbc-28c9-487e-bbaf-48509ba7cadb",
-      "name": "OpenAI Chat Model for Receipt",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
       "position": [
-        -64,
-        2208
+        -1088,
+        2800
+      ],
+      "id": "00778f32-2625-42a0-96bf-e83bd40342b6",
+      "name": "HTTP Request",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "05f6c03b-320b-4117-89d2-1de603196ba6",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -864,
+        2800
+      ],
+      "id": "9444a131-d7c3-4f62-a374-bbd8e4da9bb9",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"success\": false, \"message\": \"Duplicate Invoice Detected\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -640,
+        2896
+      ],
+      "id": "d941b581-fa81-45d9-a811-a03aa209a3b5",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "id": "ba980510-2500-4224-9827-3a49cf024d62",
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1424,
+        3024
       ],
       "credentials": {
-        "openAiApi": {
-          "id": "FrS4gpA4VYmi8yIC",
-          "name": "n8n free OpenAI API credits"
+        "groqApi": {
+          "id": "HEj9KgaxF4MGiU7E",
+          "name": "Groq account"
         }
       }
     }
@@ -180,17 +259,6 @@
         ]
       ]
     },
-    "OpenAI Chat Model for Receipt": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Parse Receipt Data",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Receipt JSON Schema": {
       "ai_outputParser": [
         [
@@ -206,14 +274,25 @@
       "main": [
         [
           {
-            "node": "Send to Node.js Backend",
+            "node": "HTTP Request",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Send to Node.js Backend": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
       "main": [
         [
           {
@@ -221,13 +300,31 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Parse Receipt Data",
+            "type": "ai_languageModel",
+            "index": 0
+          }
         ]
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {},
-  "versionId": "65959173-534e-4c49-8573-b47af6c3a202",
+  "versionId": "6dadbd53-5ab7-46ae-a496-9af6dd56ff70",
   "meta": {
     "templateId": "ready-to-run-ai-workflow",
     "templateCredsSetupCompleted": true,
