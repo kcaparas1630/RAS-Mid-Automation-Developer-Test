@@ -7,13 +7,14 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (use npm install instead of npm ci)
+RUN npm install --production
 
 # Copy source code
 COPY . .
 
 # Build TypeScript
+RUN npm install --save-dev typescript @types/node
 RUN npm run build
 
 # Create logs directory
