@@ -1,0 +1,46 @@
+{
+  "vendors": [
+    {
+      "standardName": "Home Depot",
+      "variations": [
+        "home depot",
+        "the home depot",
+        "homedepot",
+        "h0me depot",
+        "home dep0t"
+      ]
+    },
+    {
+      "standardName": "RONA",
+      "variations": [
+        "rona",
+        "rona inc",
+        "rona hardware",
+        "r0na"
+      ]
+    },
+    {
+      "standardName": "Lowe's",
+      "variations": [
+        "lowes",
+        "lowe's",
+        "lowes home improvement",
+        "l0wes"
+      ]
+    },
+    {
+      "standardName": "Canadian Tire",
+      "variations": [
+        "canadian tire",
+        "cdn tire"
+      ]
+    },
+    {
+      "standardName": "Lumber Yard",
+      "variations": [
+        "lumber yard",
+        "the lumber yard"
+      ]
+    }
+  ]
+}
