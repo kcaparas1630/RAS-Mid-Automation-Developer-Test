@@ -55,17 +55,31 @@ RAS-Mid-Automation-Developer-Test/
 └── README.md
 ```
 
-## 🚀 Getting Started
+## 🚀 Live Demo
 
-### Choose Your Deployment
+**✨ Try the application now:**
 
-**☁️ Cloud Deployment (Recommended for Demo/Production)**
-- Deploy to Vercel + Render in minutes
-- No local setup required
-- Free tier available
-- See [DEPLOYMENT.md](DEPLOYMENT.md) for complete guide
+🔗 **Frontend**: [https://ras-mid-automation-developer-test.vercel.app](https://ras-mid-automation-developer-test.vercel.app)
 
-**💻 Local Development**
+**Deployed Infrastructure:**
+- **Frontend**: Vercel
+- **Backend**: Render ([https://ras-mid-automation-developer-test.onrender.com](https://ras-mid-automation-developer-test.onrender.com))
+- **Automation Workflow**: n8n Cloud
+
+## 📖 How to Use
+
+1. **Visit the application**: [https://ras-mid-automation-developer-test.vercel.app](https://ras-mid-automation-developer-test.vercel.app)
+2. **Upload a receipt image** or click "Create Sample Invoice" to test
+3. **View invoices** in the feed below
+4. **Manage invoices**:
+   - Click ✏️ to edit status (pending/paid/cancelled)
+   - Click 🗑️ to delete
+5. **Download CSV** report using the download button
+
+## 🛠️ Local Development (Optional)
+
+<details>
+<summary>Click to expand local setup instructions</summary>
 
 ### Prerequisites
 
@@ -78,112 +92,70 @@ RAS-Mid-Automation-Developer-Test/
 ### 1. Backend Setup
 
 ```bash
-# Navigate to server directory
 cd server
-
-# Install dependencies
 npm install
-
-# Start the development server
 npm run dev
-
-# Server will run on http://localhost:3000
-```
-
-#### Backend Environment Variables (Optional)
-Create a `.env` file in the `server` directory:
-```env
-PORT=3000
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:3001
+# Server runs on http://localhost:3000
 ```
 
 ### 2. Frontend Setup
 
 ```bash
-# Navigate to client directory
 cd client
-
-# Install dependencies
 npm install
-
-# Start the React development server
 npm start
-
-# Frontend will run on http://localhost:3001
+# Frontend runs on http://localhost:3001
 ```
 
-#### Frontend Environment Variables (Optional)
-Create a `.env` file in the `client` directory:
-```env
-REACT_APP_API_URL=http://localhost:3000
-REACT_APP_N8N_WEBHOOK_URL=http://localhost:5678/webhook/receipt-ocr
-```
+### 3. Environment Variables
 
-### 3. n8n Workflow Setup
+Create `.env` files in both `server/` and `client/` directories. See `.env.example` for required variables.
 
-1. **Install n8n** (if not already installed):
-   ```bash
-   npm install -g n8n
-   ```
-
-2. **Start n8n**:
-   ```bash
-   n8n start
-   ```
-
-3. **Import the workflow**:
-   - Open n8n at `http://localhost:5678`
-   - Click on **Workflows** → **Import from File**
-   - Select `OCR Automation with Agent.json`
-
-4. **Configure credentials**:
-   - **OCR.space API**: Get free API key from [OCR.space](https://ocr.space/ocrapi)
-   - **OpenAI API**: Add your OpenAI API key in the workflow
-
-5. **Activate the workflow**:
-   - Click the toggle to activate the workflow
-   - Webhook URL: `http://localhost:5678/webhook/receipt-ocr`
+</details>
 
 ## 📖 Usage
 
-### Option 1: Full Workflow (n8n + Backend)
+### Testing the Live Application
 
-1. Ensure n8n workflow is active
-2. Ensure backend server is running
-3. Open the React frontend
-4. Upload a receipt image (supports images up to 10MB - auto-compressed to <1MB)
-5. The workflow will:
-   - Automatically compress large images
-   - Extract text using OCR
-   - Parse data using AI
-   - Check for duplicates
-   - Send to Node.js backend
-   - Display in the invoice feed
-6. Manage invoices:
-   - Click ✏️ to edit invoice status
+Visit [https://ras-mid-automation-developer-test.vercel.app](https://ras-mid-automation-developer-test.vercel.app) and:
+
+1. **Upload a receipt image** (supports up to 10MB - auto-compressed to <1MB)
+   - The workflow will automatically:
+     - Compress large images for OCR processing
+     - Extract text using OCR.space API
+     - Parse vendor, amount, and date using OpenAI
+     - Check for duplicates and normalize vendor names
+     - Save to database and display in feed
+
+2. **Or create a sample invoice** using the "Create Sample Invoice" button
+
+3. **Manage invoices**:
+   - Click ✏️ to edit status (pending/paid/cancelled)
    - Click 🗑️ to delete invoice
 
-### Option 2: Direct Backend Testing
+4. **Download CSV** report using the "📥 Download CSV Report" button
 
-1. Use the "Create Sample Invoice" button in the frontend
-2. Or make a POST request to `/api/invoices`:
-   ```bash
-   curl -X POST http://localhost:3000/api/invoices \
-     -H "Content-Type: application/json" \
-     -d '{
-       "vendorName": "Home Depot",
-       "totalAmount": 450.00,
-       "date": "2024-05-12"
-     }'
-   ```
+### API Testing (Optional)
 
-### CSV Export
+Test the backend API directly:
 
-1. Click the **"📥 Download CSV Report"** button in the frontend
-2. Or visit: `http://localhost:3000/api/csv-export`
+```bash
+# Create invoice
+curl -X POST https://ras-mid-automation-developer-test.onrender.com/api/invoices \
+  -H "Content-Type: application/json" \
+  -d '{
+    "vendorName": "Home Depot",
+    "totalAmount": 450.00,
+    "date": "2024-05-12"
+  }'
+
+# Download CSV
+curl https://ras-mid-automation-developer-test.onrender.com/api/csv-export
+```
 
 ## 🎯 API Endpoints
+
+Base URL: `https://ras-mid-automation-developer-test.onrender.com`
 
 ### Invoices
 
@@ -199,8 +171,8 @@ REACT_APP_N8N_WEBHOOK_URL=http://localhost:5678/webhook/receipt-ocr
 
 ### Documentation
 
-- **Swagger UI**: `http://localhost:3000/api-docs`
-- **Health Check**: `http://localhost:3000/health`
+- **Swagger UI**: [https://ras-mid-automation-developer-test.onrender.com/api-docs](https://ras-mid-automation-developer-test.onrender.com/api-docs)
+- **Health Check**: [https://ras-mid-automation-developer-test.onrender.com/health](https://ras-mid-automation-developer-test.onrender.com/health)
 
 ## 🔧 Advanced Features
 
@@ -248,28 +220,30 @@ Create a `vendor-mappings.json` file in the server root:
 
 The system will automatically load this file on startup.
 
-## 🧪 Testing
+## 🧪 Testing Features
 
 ### Test Duplicate Prevention
 
-1. Create an invoice
-2. Try to create the same invoice again
-3. Should receive a 409 error
+1. Upload or create an invoice
+2. Try to upload/create the exact same invoice again (same vendor, date, amount)
+3. System will reject with error: "Duplicate invoice detected"
 
 ### Test Vendor Normalization
 
-Send these variations and they'll all be saved as "Home Depot":
+Try creating invoices with these vendor name variations - they'll all normalize to "Home Depot":
+
 ```bash
-# Variation 1
-curl -X POST http://localhost:3000/api/invoices \
+# Test via live API
+curl -X POST https://ras-mid-automation-developer-test.onrender.com/api/invoices \
   -H "Content-Type: application/json" \
   -d '{"vendorName": "H0me Depot", "totalAmount": 100, "date": "2024-01-01"}'
 
-# Variation 2
-curl -X POST http://localhost:3000/api/invoices \
+curl -X POST https://ras-mid-automation-developer-test.onrender.com/api/invoices \
   -H "Content-Type: application/json" \
   -d '{"vendorName": "The Home Depot", "totalAmount": 200, "date": "2024-01-02"}'
 ```
+
+All variations are stored as "Home Depot" in the database.
 
 ## 📊 Sample Data
 
