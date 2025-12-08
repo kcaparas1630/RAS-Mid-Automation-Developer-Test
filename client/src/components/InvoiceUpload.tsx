@@ -44,6 +44,23 @@ const InvoiceUpload: React.FC<InvoiceUploadProps> = ({ onInvoiceUploaded }) => {
       setUploading(true);
       setMessage(null);
 
+      // First, check if this file already exists by computing its hash
+      const fileBuffer = await selectedFile.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest('SHA-256', fileBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const fileHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+      // Check if invoice with this hash already exists
+      const checkResponse = await fetch(`${API_BASE_URL}/api/invoices`);
+      if (checkResponse.ok) {
+        const { data } = await checkResponse.json();
+        const existingInvoice = data.invoices.find((inv: any) => inv.fileHash === fileHash);
+
+        if (existingInvoice) {
+          throw new Error(`Duplicate invoice detected: ${existingInvoice.vendorName} - ${existingInvoice.date} - $${existingInvoice.amount}`);
+        }
+      }
+
       // Create FormData to send file
       const formData = new FormData();
       formData.append('file', selectedFile);
@@ -60,6 +77,11 @@ const InvoiceUpload: React.FC<InvoiceUploadProps> = ({ onInvoiceUploaded }) => {
 
       const result = await response.json();
       console.log('n8n response:', result);
+
+      // Check if the response indicates an error (e.g., duplicate)
+      if (result.error || (typeof result === 'string' && result.toLowerCase().includes('duplicate'))) {
+        throw new Error(result.error || result);
+      }
 
       setMessage({ type: 'success', text: 'Invoice processed successfully!' });
       setSelectedFile(null);
