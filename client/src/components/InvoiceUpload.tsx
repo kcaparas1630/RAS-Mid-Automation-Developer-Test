@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import imageCompression from 'browser-image-compression';
 import './InvoiceUpload.css';
 
 interface InvoiceUploadProps {
@@ -44,9 +45,31 @@ const InvoiceUpload: React.FC<InvoiceUploadProps> = ({ onInvoiceUploaded }) => {
       setUploading(true);
       setMessage(null);
 
+      let fileToUpload = selectedFile;
+
+      // Compress image if larger than 1MB (OCR.space free tier limit)
+      if (selectedFile.size > 1 * 1024 * 1024) {
+        try {
+          const options = {
+            maxSizeMB: 0.9, // Target size just under 1MB
+            maxWidthOrHeight: 1920, // Max dimension
+            useWebWorker: true,
+            fileType: selectedFile.type,
+          };
+
+          console.log('Original file size:', (selectedFile.size / 1024 / 1024).toFixed(2), 'MB');
+          fileToUpload = await imageCompression(selectedFile, options);
+          console.log('Compressed file size:', (fileToUpload.size / 1024 / 1024).toFixed(2), 'MB');
+        } catch (compressionError) {
+          console.error('Compression error:', compressionError);
+          setMessage({ type: 'error', text: 'Failed to compress image. Please try a smaller file.' });
+          return;
+        }
+      }
+
       // Create FormData to send file
       const formData = new FormData();
-      formData.append('file', selectedFile);
+      formData.append('file', fileToUpload);
 
       // Send to n8n webhook
       const response = await fetch(N8N_WEBHOOK_URL, {
